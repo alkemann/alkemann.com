@@ -12,7 +12,7 @@ define('RESOURCE_DIR', 'resources');
 define('LOGS_PATH', ROOT . DS . RESOURCE_DIR . DS . 'logs' . DS);
 define('LOCALES_PATH', ROOT . DS . RESOURCE_DIR . DS . 'locales' . DS);
 define('CONFIG_PATH', ROOT . DS . RESOURCE_DIR . DS . 'configs' . DS);
-define('HL_PATH', LIBS_PATH . 'alkemann/h.l/src' . DS);
+define('HL_PATH', LIBS_PATH . 'alkemann/h.l/src/alkemann/hl' . DS);
 
 require_once(CONFIG_PATH . 'defines.php');
 require_once(LIBS_PATH . 'autoload.php');
