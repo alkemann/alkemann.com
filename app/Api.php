@@ -24,9 +24,9 @@ class Api {
             case Request::GET :
                 if (isset($_GET['id'])) { // Get single entity
                     $id = $_GET['id'];
-                    $round = $this->model->get($id);
-                    if ($round) {
-                        return $round;
+                    $entity = $this->model->get($id);
+                    if ($entity) {
+                        return $entity;
                     } else {
                         $this->render->respondWith404();
                     }
@@ -36,6 +36,10 @@ class Api {
                     if (isset($conditions['limit'])) {
                         $options['limit'] = $conditions['limit'];
                         unset($conditions['limit']);
+                    }
+                    if (isset($conditions['order'])) {
+                        $options['order'] = $conditions['order'];
+                        unset($conditions['order']);
                     }
                     return $this->model->find($conditions, $options);
                 }
@@ -50,12 +54,24 @@ class Api {
                 if ($data === false || $data === null) {
                     return $this->render->respondWith400("Invalid json body");
                 }
-                $entity = $this->model->create($data);
-                if ($entity->save()) {
-                    dd($entity, $data);
-                    return $entity;
-                } else {
-                    return $this->render->respondWith400("Invalid data");
+                if (isset($_GET['id'])) { // Update entity
+                    $id = $_GET['id'];
+                    $entity = $this->model->get($id);
+                    if (!$entity) {
+                        return $this->render->respondWith404();
+                    }
+                    if ($entity->save($data)) {
+                        return $entity;
+                    } else {
+                        return $this->render->respondWith400("Invalid data");
+                    }
+                } else { // Insert new
+                    $entity = $this->model->create($data);
+                    if ($entity->save()) {
+                        return $entity;
+                    } else {
+                        return $this->render->respondWith400("Invalid data");
+                    }
                 }
             break;
 
