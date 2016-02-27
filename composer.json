@@ -1,10 +1,10 @@
 {
-    "name": "alkemann/h.l.app",
-    "description": "Base package for making homepages.",
-    "version": "v2.0",
+    "name": "alkemann.com",
+    "description": "My homepage",
+    "version": "v1.0",
     "type": "project",
     "keywords": ["cms", "homepage", "alkemann"],
-    "homepage": "https://github.com/alkemann/h.l.app",
+    "homepage": "http://alkemann.com",
     "license": "MIT",
     "authors": [
         {
@@ -13,16 +13,18 @@
             "role": "Developer"
         }
     ],
-    "support": {
-        "issues": "https://github.com/alkemann/h.l.app/issues"
-    },
     "require": {
-        "alkemann/h.l": "~1.3"
+        "alkemann/h.l": "2.*"
     },
     "repositories": [
         {
             "type": "git",
             "url": "https://github.com/alkemann/h.l.git"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "app\\": "app/"
+        }
+    }
 }
