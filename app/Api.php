@@ -45,6 +45,19 @@ class Api {
                 }
             break;
 
+            case Request::DELETE :
+                if (isset($_GET['id'])) { // Get single entity
+                    $id = $_GET['id'];
+                    $entity = $this->model->get($id);
+                    if ($entity) {
+                        return $entity->delete();
+                    } else {
+                        $this->render->respondWith404();
+                    }
+                }
+            break;
+
+            case Request::PUT :
             case Request::POST :
                 $json = $request->getPostBody();
                 if (!$json) {
@@ -75,8 +88,9 @@ class Api {
                 }
             break;
 
+
             default:
-                throw new Exception("Unsupported HTTP request method: " . $this->request()->method());
+                throw new \Exception("Unsupported HTTP request method: " . $request->method());
         }
     }
 }
