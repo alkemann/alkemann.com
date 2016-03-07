@@ -17,11 +17,39 @@ input[type=checkbox] {
 
   /* Webkit browsers*/
   -webkit-transform: scale(1.3);
+
+  margin: 0;
 }
 
-.taskEdit input[type=text] {
+span.label, .taskEdit input[type=text], .taskAdd input[type=text]
+{
+ font-size: 100%;
+ line-height: 1.3em;
+}
+
+button {
+    height: 1.3em;
     padding: 0;
-    margin: 0 0 0 1.7em;
+}
+
+form.taskView {
+
+ border-bottom: 1px solid #FFF;
+}
+
+.add button {
+    margin: 0.5em 20% 1em 1.2em;
+    width: 80%;
+
+}
+
+.taskEdit input[type=text], .taskAdd input[type=text]
+{
+    padding: 0;
+    margin: 0 0 0 1.2em;
+    border: none;
+    border-bottom: 1px solid #AAA;
     font-size: 1em;
+    outline: none;
     width: 80%;
 }

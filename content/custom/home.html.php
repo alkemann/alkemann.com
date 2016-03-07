@@ -9,7 +9,12 @@
 </script>
 <script id="taskEditTemplate" type="text/template">
     <form class="taskEdit">
-        <input type="text" name="taskEdit<%= id %>" onFocus="this.select();" value="<%= title %>" />
+        <input type="text" name="taskEdit<%= id %>" onfocus="this.select();" value="<%= title %>" />
+    </form>
+</script>
+<script id="taskAddTemplate" type="text/template">
+    <form class="taskAdd">
+        <input type="text" name="taskAdd<%= id %>" onfocus="this.select();" value="<%= title %>" placeholder="Placeholder text" />
     </form>
 </script>
 
