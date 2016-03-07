@@ -9,7 +9,7 @@
 </script>
 <script id="taskEditTemplate" type="text/template">
     <form class="taskEdit">
-        <input type="text" name="taskEdit<%= id %>" value="<%= title %>" />
+        <input type="text" name="taskEdit<%= id %>" onFocus="this.select();" value="<%= title %>" />
     </form>
 </script>
 
@@ -20,8 +20,6 @@
 <script src="js/app.js"></script>
 <!-- App runtime -->
 <script type="text/javascript">
-    
-
     /////////////////////////////////////////////////////////
     // App - runtime
     /////////////////////////////////////////////////////////

@@ -37,8 +37,9 @@ App.Views.TaskItem = Backbone.View.extend({
   viewTemplate: t("taskListTemplate"),
   editTemplate: t("taskEditTemplate"),
   events: {
-    'dblclick .label': 'edit',
-    'submit': 'update',
+    'dblclick .taskView .label': 'edit',
+    'submit .taskEdit': 'update',
+    'blur .taskEdit input[type=text]': 'render',
   },
 
   // methods
@@ -50,6 +51,7 @@ App.Views.TaskItem = Backbone.View.extend({
   /// events
   edit: function(e) {
     this.$el.html( this.editTemplate( this.model.toJSON() ) );
+    this.$el.find("input[type=text]").focus();
   },
   update: function(e) {
     e.preventDefault();
