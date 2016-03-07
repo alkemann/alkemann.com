@@ -37,7 +37,7 @@ form.taskView {
  border-bottom: 1px solid #FFF;
 }
 
-.add button {
+button#add {
     margin: 0.5em 20% 1em 1.2em;
     width: 80%;
 

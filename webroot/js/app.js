@@ -19,15 +19,62 @@ var vent = _.extend({}, Backbone.Events);
 /////////////////////////////////////////////////////////
 
 App.Models.Task = Backbone.Model.extend({
-  defaults: {id: null, title: ""}
+  defaults: {
+    id: null,
+    description: "",
+    priority: 0,
+    status: 0
+  },
+  urlRoot: 'api/todo.json',
 });
 
-App.Collections.Tasks = Backbone.Collection.extend({model: App.Models.Task});
+App.Collections.Tasks = Backbone.Collection.extend({
+    model: App.Models.Task,
+    url:'api/todo.json'
+});
+
 
 
 /////////////////////////////////////////////////////////
 // Views
 /////////////////////////////////////////////////////////
+
+// Add task view
+App.Views.TaskAdd = Backbone.View.extend({
+
+  template: t("taskAddTemplate"),
+  events: {
+    'submit .taskAdd': 'submitted',
+    'blur .taskAdd input[type=text]': 'cancelled',
+  },
+
+  // init
+  initialize: function () {},
+
+  // methods
+  render: function() {
+    this.$el.html( this.template( this.model.toJSON() ) );
+    return this;
+  },
+
+  /// events
+  submitted: function(e) {
+    e.preventDefault();
+    console.log("submitted!");
+
+    var newTitle = $(this.$el[0]).find("input[type=text]").val();
+    if (newTitle != "")
+      var vent.trigger('add:submit', newTitle);
+
+    this.undelegateEvents();
+    this.remove();
+  },
+  cancelled: function(e) {
+    var vent.trigger('add:cancel');
+    this.undelegateEvents();
+    this.remove();
+  },
+});
 
 // Task item view
 App.Views.TaskItem = Backbone.View.extend({
@@ -35,13 +82,10 @@ App.Views.TaskItem = Backbone.View.extend({
   className: 'task',
   viewTemplate: t("taskListTemplate"),
   editTemplate: t("taskEditTemplate"),
-  addTemplate: t("taskAddTemplate"),
   events: {
     'dblclick .taskView .label': 'renderEdit',
     'submit .taskEdit': 'update',
-    'submit .taskAdd': 'add',
     'blur .taskEdit input[type=text]': 'render',
-    'blur .taskAdd input[type=text]': 'cancelAdd',
   },
 
   // init
@@ -56,36 +100,20 @@ App.Views.TaskItem = Backbone.View.extend({
     this.$el.html( this.viewTemplate( this.model.toJSON() ) );
     return this;
   },
-  renderAdd: function() {
-    this.$el.html( this.addTemplate( this.model.toJSON() ) );
-    return this;
-  },
   renderEdit: function() {
     this.$el.html( this.editTemplate( this.model.toJSON() ) );
     this.$el.find("input[type=text]").focus();
     return this;
   },
 
-  /// events
-  add: function(e) {
-    e.preventDefault();
-    var newTitle = $(this.$el[0]).find("input[type=text]").val();
-    if (newTitle != "")
-      this.model.set('title', newTitle);
-  },
-  cancelAdd: function(e) {
-    this.undelegateEvents();
-    this.remove();
-    vent.trigger('taskAdd:cancel');
-  },
+  // events
   update: function(e) {
     e.preventDefault();
     var newTitle = $(this.$el[0]).find("input[type=text]").val();
     if (newTitle != "")
-      this.model.set('title', newTitle);
+      this.model.set('description', newTitle);
   },
-  remove: function(e) {},
-  add: function(e) {}
+  remove: function(e) {}
 });
 
 
@@ -98,40 +126,57 @@ App.Views.TaskList = Backbone.View.extend({
   },
   // init
   initialize: function () {
-    vent.on('taskAdd:cancel', this.addCancelled, this)
+    var vent.on('add:button', this.addStart, this);
+
+    this.listenTo(this.collection, 'add', this.renderItem);
   },
 
   // methods
-  render: function() {
-    this.collection.each(this.addItem, this);
-    this.$el.append("<li class='add'><button> + </button></li>")
-    return this;
-  },
-  addItem: function(task) {
+
+  renderItem: function(task) {
     var tv = new App.Views.TaskItem({model: task});
     this.$el.append(tv.render().el);
   },
-  addCancelled: function() {
-    var model = this.collection.pop();
-    model.destroy();
-  },
-
 
   // events
-  add: function() {
-    var $li = this.$el.find("li.add");
-    var buttonHtml = $li[0];
-    $li.remove();
-    var m = new App.Models.Task({}); // title: "<do this>"
-    this.collection.push(m);
-    var tv = new App.Views.TaskItem({model: m});
-    this.$el.append(tv.renderAdd().el);
+  addStart: function(e) {
+    var tv = new App.Views.TaskAdd({model: new App.Models.Task});
+    this.$el.append(tv.render().el);
     window.$ii = this.$el.find("input[type=text]")
     $ii.focus();
-
-    this.$el.append(buttonHtml);
-  }
+  },
 
 });
 
+
+/////////////////////////////////////////////////////////
+// App - runtime
+/////////////////////////////////////////////////////////
+var $task_content = $("#task-content");
+
+var tasks = new App.Collections.Tasks();
+tasks.fetch();
+
+var tasksView = new App.Views.TaskList({collection: tasks});
+$task_content.html(tasksView.render().el);
+
+var $addButton = $("#add");
+$addButton.on('click', function() {
+  $addButton.hide();
+  var vent.trigger('add:button');
+});
+function showButton() { $addButton.show(); }
+var vent.on('add:submit', showButton);
+var vent.on('add:cancel', showButton);
+
+
+var vent.on('add:submit', function(newTitle) {
+  console.log("add:submit");
+  var m = new App.Models.Task({description: newTitle});
+  tasks.push(m);
+  m.save();
+});
+
+
+///////
 })();
