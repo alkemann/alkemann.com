@@ -26,6 +26,9 @@ App.Models.Task = Backbone.Model.extend({
     status: 0
   },
   urlRoot: 'api/todo.json',
+  url: function() {
+    return this.urlRoot + ( this.isNew() ? "" :  "?id=" + this.get('id') );
+  },
 });
 
 App.Collections.Tasks = Backbone.Collection.extend({
@@ -60,17 +63,15 @@ App.Views.TaskAdd = Backbone.View.extend({
   /// events
   submitted: function(e) {
     e.preventDefault();
-    console.log("submitted!");
-
-    var newTitle = $(this.$el[0]).find("input[type=text]").val();
-    if (newTitle != "")
-      var vent.trigger('add:submit', newTitle);
+    var newDescription = $(this.$el[0]).find("input[type=text]").val();
+    if (newDescription != "")
+      vent.trigger('add:submit', newDescription);
 
     this.undelegateEvents();
     this.remove();
   },
   cancelled: function(e) {
-    var vent.trigger('add:cancel');
+    vent.trigger('add:cancel');
     this.undelegateEvents();
     this.remove();
   },
@@ -86,12 +87,13 @@ App.Views.TaskItem = Backbone.View.extend({
     'dblclick .taskView .label': 'renderEdit',
     'submit .taskEdit': 'update',
     'blur .taskEdit input[type=text]': 'render',
+    'click .remove': 'removeClicked',
   },
 
   // init
   initialize: function () {
     this.listenTo(this.model, 'change', this.render);
-    this.listenTo(this.model, 'destroy', this.remove);
+    this.listenTo(this.model, 'destroy', this.removeItem); // Wondering about this
     // this.listenTo(this.model, 'visible', this.toggleVisible);
   },
 
@@ -105,15 +107,21 @@ App.Views.TaskItem = Backbone.View.extend({
     this.$el.find("input[type=text]").focus();
     return this;
   },
+  removeItem: function() {
+    this.remove();
+  },
 
   // events
   update: function(e) {
     e.preventDefault();
-    var newTitle = $(this.$el[0]).find("input[type=text]").val();
-    if (newTitle != "")
-      this.model.set('description', newTitle);
+    var newDescription = $(this.$el[0]).find("input[type=text]").val();
+    if (newDescription != "")
+      vent.trigger('update:submit', this.model, {description: newDescription});
   },
-  remove: function(e) {}
+  removeClicked: function(e) {
+    e.preventDefault();
+    vent.trigger('remove:button', this.model);
+  }
 });
 
 
@@ -124,15 +132,14 @@ App.Views.TaskList = Backbone.View.extend({
   events: {
     'click .add button': 'add',
   },
+
   // init
   initialize: function () {
-    var vent.on('add:button', this.addStart, this);
-
+    vent.on('add:button', this.addStart, this);
     this.listenTo(this.collection, 'add', this.renderItem);
   },
 
   // methods
-
   renderItem: function(task) {
     var tv = new App.Views.TaskItem({model: task});
     this.$el.append(tv.render().el);
@@ -163,18 +170,27 @@ $task_content.html(tasksView.render().el);
 var $addButton = $("#add");
 $addButton.on('click', function() {
   $addButton.hide();
-  var vent.trigger('add:button');
+  vent.trigger('add:button');
 });
 function showButton() { $addButton.show(); }
-var vent.on('add:submit', showButton);
-var vent.on('add:cancel', showButton);
+vent.on('add:submit', showButton);
+vent.on('add:cancel', showButton);
 
 
-var vent.on('add:submit', function(newTitle) {
-  console.log("add:submit");
+vent.on('add:submit', function(newTitle) {
   var m = new App.Models.Task({description: newTitle});
   tasks.push(m);
   m.save();
+});
+
+vent.on('remove:button', function(task) {
+  if (task.destroy()) {
+    // tasks.remove(task);
+  }
+});
+
+vent.on('update:submit', function(task, updates) {
+  task.save(updates); // , {patch: true}
 });
 
 
