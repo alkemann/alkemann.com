@@ -57,7 +57,6 @@ class Api {
                 }
             break;
 
-            case Request::PUT :
             case Request::POST :
                 $json = $request->getPostBody();
                 if (!$json) {
@@ -67,27 +66,41 @@ class Api {
                 if ($data === false || $data === null) {
                     return $this->render->respondWith400("Invalid json body");
                 }
-                if (isset($_GET['id'])) { // Update entity
-                    $id = $_GET['id'];
-                    $entity = $this->model->get($id);
-                    if (!$entity) {
-                        return $this->render->respondWith404();
-                    }
-                    if ($entity->save($data)) {
-                        return $entity;
-                    } else {
-                        return $this->render->respondWith400("Invalid data");
-                    }
-                } else { // Insert new
-                    $entity = $this->model->create($data);
-                    if ($entity->save()) {
-                        return $entity;
-                    } else {
-                        return $this->render->respondWith400("Invalid data");
-                    }
+                if (isset($_GET['id']) || isset($data['id'])) { // Update entity
+                    return $this->render->respondWith400("Use PUT for Update");
+                }
+                $entity = $this->model->create($data);
+                if ($entity->save()) {
+                    return $entity;
+                } else {
+                    return $this->render->respondWith400("Invalid data");
                 }
             break;
 
+            case Request::PATCH :
+            case Request::PUT :
+                $json = $request->getPostBody();
+                if (!$json) {
+                    return $this->render->respondWith400("Missing a post body");
+                }
+                $data = json_decode($json, true);
+                if ($data === false || $data === null) {
+                    return $this->render->respondWith400("Invalid json body");
+                }
+                if (!isset($_GET['id'])) { // Update entity
+                    return $this->render->respondWith404();
+                }
+                $id = $_GET['id'];
+                $entity = $this->model->get($id);
+                if (!$entity) {
+                    return $this->render->respondWith404();
+                }
+                if ($entity->save($data)) {
+                    return $entity;
+                } else {
+                    return $this->render->respondWith400("Invalid data");
+                }
+            break;
 
             default:
                 throw new \Exception("Unsupported HTTP request method: " . $request->method());

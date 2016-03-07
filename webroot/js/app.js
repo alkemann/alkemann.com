@@ -184,13 +184,11 @@ vent.on('add:submit', function(newTitle) {
 });
 
 vent.on('remove:button', function(task) {
-  if (task.destroy()) {
-    // tasks.remove(task);
-  }
+  task.destroy();
 });
 
 vent.on('update:submit', function(task, updates) {
-  task.save(updates); // , {patch: true}
+  task.save(updates, {patch: true});
 });
 
 
