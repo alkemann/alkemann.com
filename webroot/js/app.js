@@ -88,6 +88,7 @@ App.Views.TaskItem = Backbone.View.extend({
     'submit .taskEdit': 'update',
     'blur .taskEdit input[type=text]': 'render',
     'click .remove': 'removeClicked',
+    'click .taskDone': 'toggleDone',
   },
 
   // init
@@ -121,6 +122,10 @@ App.Views.TaskItem = Backbone.View.extend({
   removeClicked: function(e) {
     e.preventDefault();
     vent.trigger('remove:button', this.model);
+  },
+  toggleDone: function(e) {
+    var newValue = this.$('.taskDone').is(":checked"); //.attr('checked') === 'checked';
+    vent.trigger('done:changed', this.model, newValue);
   }
 });
 
@@ -189,6 +194,16 @@ vent.on('remove:button', function(task) {
 
 vent.on('update:submit', function(task, updates) {
   task.save(updates, {patch: true});
+});
+
+vent.on('done:changed', function(task, newValue) {
+  if (task.get('status') == 0 && newValue == true) {
+    task.save({status: 1}, {patch: true})
+  } else if (task.get('status') == '1' && newValue == false) {
+    task.save({status: 0}, {patch: true})
+  } else {
+    console.log([newValue, task.toJSON()]);
+  }
 });
 
 

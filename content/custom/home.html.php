@@ -6,7 +6,9 @@
 
 <!-- Templates -->
 <script id="taskListTemplate" type="text/template">
-    <form class="taskView"><input type="checkbox" class="taskDone" name="taskDone<%= id %>" value="<%= id %>" /> <span class="label"><%= description %></span>
+    <form class="taskView">
+    	<input type="checkbox" class="taskDone" name="taskDone<%= id %>" value="<%= id %>" 
+    	<%= status == 1 ? 'checked="checked"' : '' %> /> <span class="label <%= status == 1 ? 'done' : '' %> "><%= description %></span>
     <button class="remove">DEL</button></form>
 </script>
 <script id="taskEditTemplate" type="text/template">

@@ -43,6 +43,10 @@ button#add {
 
 }
 
+span.done {
+  text-decoration: line-through;
+}
+
 .taskEdit input[type=text], .taskAdd input[type=text]
 {
     padding: 0;
