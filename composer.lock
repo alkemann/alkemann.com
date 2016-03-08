@@ -17,7 +17,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "alkemann\\": "src/alkemann/"
+                    "alkemann\\hl\\": "src/"
                 }
             },
             "license": [
