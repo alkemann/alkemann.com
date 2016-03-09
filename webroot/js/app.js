@@ -101,15 +101,11 @@ TM.View.App = Backbone.View.extend({
     }
   },
   purgeCompletedTodos: function() {
-    var toBeRemoved = [];
+    var completedTasks = [];
     this.collection.each(function(task) {
-      if (task.get('status') == 1) {
-        toBeRemoved.push(task);
-      }
-    }, this);
-    $.each(toBeRemoved, function(i, task) {
-      this.collection.remove(task);
-    }, this);
+      if (task.get('status') != 0) completedTasks.push(task);
+    });
+    this.collection.remove(completedTasks);
 
     vent.trigger("taskList:render");
     vent.trigger("add:render");
