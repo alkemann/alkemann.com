@@ -8,6 +8,7 @@ TM.View.TaskList = Backbone.View.extend({
   // init
   initialize: function () {
     this.listenTo(this.collection, 'add', this.renderItem);
+    this.listenTo(this.collection, 'sort', this.renderFull);
     vent.on('taskList:render', this.renderFull, this);
   },
 

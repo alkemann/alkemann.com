@@ -19,6 +19,12 @@ TM.Model.Task = Backbone.Model.extend({
 
 TM.Collection.Tasks = Backbone.Collection.extend({
     model: TM.Model.Task,
-    url:'api/tasks?limit=100&status=0'
+    url:'api/tasks?limit=100&status=0',
+    comparator: function(a, b) {
+      var ai = parseInt(a.get('priority')),
+          bi = parseInt(b.get('priority'));
+      if (ai === bi) return 0;
+      return ai < bi ? 1 : -1;
+    }
 });
 
