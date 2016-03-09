@@ -13,6 +13,15 @@ window.vent = _.extend({}, Backbone.Events);
 /////////////////////////////////////////////////////////
 
 TM.Router = Backbone.Router.extend({
+  routes: {
+    "purge": "purge"
+  },
+
+  purge: function() {
+    vent.trigger('purge:clicked');
+    this.navigate("");
+  }
+
 
 });
 
@@ -28,45 +37,49 @@ TM.View.App = Backbone.View.extend({
   initialize: function() {
     // Grab the collection
     this.collection = new TM.Collection.Tasks;
-    this.collection.fetch();
+    this.collection.fetch({success: function() {
+      vent.trigger("add:render");
+    }});
 
     // Set up the view parts
     this.views = {};
     this.views.collection = new TM.View.TaskList({collection: this.collection});
-    this.views.$addButton = this.$("#taskAdd button");
 
     // Set up all events reaction for the ap
-    vent.on('add:button',     this.addStart, this);
-    vent.on('add:submit',     this.showButton, this);
-    vent.on('add:cancel',     this.showButton, this);
+    vent.on('add:render',     this.renderAddView, this);
     vent.on('add:submit',     this.addSubmit, this);
     vent.on('remove:button',  this.removeButton, this);
     vent.on('update:submit',  this.updateSubmit, this);
     vent.on('done:changed',   this.doneCheckboxToggled, this);
+    vent.on('purge:clicked',    this.purgeCompletedTodos, this);
+
+    // Listen to all events and display them
+    // vent.on('all', function(eventName) { console.info('EVENT: ' + eventName); });
 
     // Populate collection and render app view
     this.render();
+
+    // this.renderAddView();
+
+    new TM.Router;
+    Backbone.history.start();
   },
 
   // methods
   render: function() {
     // no template, modifies the #content div that exists on page
-    this.$("#taskList").html( this.views.collection.render().el );
+    this.$("#taskList").html( this.views.collection.el );
     return this;
   },
-  showButton: function() {
-    this.views.$addButton.show();
-  },
-
-  // events
-  addStart: function() {
-    this.views.$addButton.hide();
-    var tv = new TM.View.TaskAdd({model: new TM.Model.Task});
+  renderAddView: function() {
+    var tv = new TM.View.TaskAdd();
     var $listView = this.views.collection.$el;
     $listView.append(tv.render().el);
     window.$ii = $listView.find("input[type=text]");
     $ii.focus();
   },
+
+  // events
   addSubmit: function(newTitle) {
     var m = new TM.Model.Task({description: newTitle});
     this.collection.push(m);
@@ -86,7 +99,21 @@ TM.View.App = Backbone.View.extend({
     } else {
       console.error([newValue, task.toJSON()]);
     }
-  }
+  },
+  purgeCompletedTodos: function() {
+    var toBeRemoved = [];
+    this.collection.each(function(task) {
+      if (task.get('status') == 1) {
+        toBeRemoved.push(task);
+      }
+    }, this);
+    $.each(toBeRemoved, function(i, task) {
+      this.collection.remove(task);
+    }, this);
+
+    vent.trigger("taskList:render");
+    vent.trigger("add:render");
+  },
 
 });
 

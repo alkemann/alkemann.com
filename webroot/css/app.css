@@ -18,6 +18,7 @@ input[type=checkbox] {
   /* Webkit browsers*/
   -webkit-transform: scale(1.3);
 
+  cursor: pointer;
   margin: 0;
 }
 
@@ -25,6 +26,11 @@ span.label, .taskEdit input[type=text], .taskAdd input[type=text]
 {
  font-size: 100%;
  line-height: 1.3em;
+}
+
+span.label
+{
+  cursor: pointer;
 }
 
 button {

@@ -4,12 +4,19 @@
 TM.View.TaskList = Backbone.View.extend({
   tagName: 'ol',
 
+
   // init
   initialize: function () {
     this.listenTo(this.collection, 'add', this.renderItem);
+    vent.on('taskList:render', this.renderFull, this);
   },
 
   // methods
+  renderFull: function() {
+    this.$el.html("");
+    this.collection.each(this.renderItem, this);
+    return this;
+  },
   renderItem: function(task) {
     var tv = new TM.View.TaskItem({model: task});
     this.$el.append(tv.render().el);
@@ -70,22 +77,17 @@ TM.View.TaskItem = Backbone.View.extend({
 
 // Add task view
 TM.View.TaskAdd = Backbone.View.extend({
-
   template: t("taskAddTemplate"),
   events: {
     'submit .taskAdd': 'submitted',
-    'blur .taskAdd input[type=text]': 'cancelled',
   },
-
-  // init
-  initialize: function () {},
 
   // methods
   render: function() {
-    this.$el.html( this.template( this.model.toJSON() ) );
+    this.$el.html( this.template() );
     return this;
-  },
-
+  }
+,
   /// events
   submitted: function(e) {
     e.preventDefault();
@@ -93,12 +95,8 @@ TM.View.TaskAdd = Backbone.View.extend({
     if (newDescription != "")
       vent.trigger('add:submit', newDescription);
 
-    this.undelegateEvents();
     this.remove();
+    vent.trigger('add:render'); // default behavior is to keep adding new
   },
-  cancelled: function(e) {
-    vent.trigger('add:cancel');
-    this.undelegateEvents();
-    this.remove();
-  },
+
 });

@@ -1,9 +1,8 @@
 <!-- Start HTML -->
 <div id="content">
     <h1>Tasks</h1>
-    <ul class="taskMenu"><li><a href="#purge">purged completed</a></li></ul>
+    <ul class="taskMenu"><li><a href="#purge">Archive completed tasks</a></li></ul>
     <div id="taskList"></div>
-    <div id="taskAdd"><button onclick="javascript: vent.trigger('add:button', this);"> + </button></div>
 </div>
 
 
@@ -20,7 +19,7 @@
 </script>
 <script id="taskAddTemplate" type="text/template">
     <form class="taskAdd">
-        <input type="text" name="taskAdd<%= id %>" onfocus="this.select();" value="<%= description %>" placeholder="Placeholder text" />
+        <input type="text" name="taskAdd" onfocus="this.select();" placeholder="Next task?" />
     </form>
 </script>
 
