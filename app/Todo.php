@@ -4,6 +4,7 @@ namespace app;
 
 use alkemann\hl\data\Connection;
 use alkemann\hl\data\Db;
+use alkemann\hl\data\Entity;
 
 class Todo extends \alkemann\hl\data\Model
 {
@@ -13,7 +14,7 @@ class Todo extends \alkemann\hl\data\Model
         return
             new Todo(
                 new Db(
-                    new Connection(['database' => 'todos', 'username' => 'root', 'password' => ''])
+                    new Connection(['database' => 'todos', 'username' => 'root', 'password' => 'root'])
                 ), 
                 [
                     'db' => 'todos',
@@ -26,5 +27,10 @@ class Todo extends \alkemann\hl\data\Model
     public function string($entity)
     {
         return $entity->description;
+    }
+
+    public function delete(Entity $entity, array $options = [])
+    {
+        return $this->save($entity, ['status' => $entity->status - 10]);
     }
 }

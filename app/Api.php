@@ -19,11 +19,11 @@ class Api {
 
     public function __invoke() {
         $request    = $this->request;
+        $id         = $request->param('id');
         switch ($request->method()) {
 
             case Request::GET :
-                if (isset($_GET['id'])) { // Get single entity
-                    $id = $_GET['id'];
+                if ($id) { // Get single entity
                     $entity = $this->model->get($id);
                     if ($entity) {
                         return $entity;
@@ -46,14 +46,15 @@ class Api {
             break;
 
             case Request::DELETE :
-                if (isset($_GET['id'])) { // Get single entity
-                    $id = $_GET['id'];
+                if ($id) { // Get single entity
                     $entity = $this->model->get($id);
                     if ($entity) {
                         return $entity->delete();
                     } else {
                         $this->render->respondWith404();
                     }
+                } else {
+                    $this->render->respondWith400("Missing id");
                 }
             break;
 
@@ -66,7 +67,7 @@ class Api {
                 if ($data === false || $data === null) {
                     return $this->render->respondWith400("Invalid json body");
                 }
-                if (isset($_GET['id']) || isset($data['id'])) { // Update entity
+                if ($id || isset($data['id'])) { // Update entity
                     return $this->render->respondWith400("Use PUT for Update");
                 }
                 $entity = $this->model->create($data);
@@ -87,10 +88,9 @@ class Api {
                 if ($data === false || $data === null) {
                     return $this->render->respondWith400("Invalid json body");
                 }
-                if (!isset($_GET['id'])) { // Update entity
+                if (!$id) { // Update entity
                     return $this->render->respondWith404();
                 }
-                $id = $_GET['id'];
                 $entity = $this->model->get($id);
                 if (!$entity) {
                     return $this->render->respondWith404();

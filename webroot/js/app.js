@@ -2,208 +2,92 @@
 (function() {
 
 ///// globals
-window.App = window.App || { Models: {}, Views: {}, Collections: {}, Router: {} }
+window.TM = window.TM || { Model: {}, View: {}, Collection: {}, Router: {} }
 window.t = window.t || function(id) { return _.template($("#"+id).html()); }
 
 // Events container for general pub/sub
-var vent = _.extend({}, Backbone.Events);
+window.vent = _.extend({}, Backbone.Events);
 
 /////////////////////////////////////////////////////////
 // Routes
 /////////////////////////////////////////////////////////
 
+TM.Router = Backbone.Router.extend({
 
-
-/////////////////////////////////////////////////////////
-// Backend : Models & Collections
-/////////////////////////////////////////////////////////
-
-App.Models.Task = Backbone.Model.extend({
-  defaults: {
-    id: null,
-    description: "",
-    priority: 0,
-    status: 0
-  },
-  urlRoot: 'api/todo.json',
-  url: function() {
-    return this.urlRoot + ( this.isNew() ? "" :  "?id=" + this.get('id') );
-  },
-});
-
-App.Collections.Tasks = Backbone.Collection.extend({
-    model: App.Models.Task,
-    url:'api/todo.json'
 });
 
 
-
 /////////////////////////////////////////////////////////
-// Views
+// App View
 /////////////////////////////////////////////////////////
 
-// Add task view
-App.Views.TaskAdd = Backbone.View.extend({
+TM.View.App = Backbone.View.extend({
+  el: '#content',
 
-  template: t("taskAddTemplate"),
-  events: {
-    'submit .taskAdd': 'submitted',
-    'blur .taskAdd input[type=text]': 'cancelled',
-  },
+  // INIT
+  initialize: function() {
+    // Grab the collection
+    this.collection = new TM.Collection.Tasks;
+    this.collection.fetch();
 
-  // init
-  initialize: function () {},
+    // Set up the view parts
+    this.views = {};
+    this.views.collection = new TM.View.TaskList({collection: this.collection});
+    this.views.$addButton = this.$("#taskAdd button");
 
-  // methods
-  render: function() {
-    this.$el.html( this.template( this.model.toJSON() ) );
-    return this;
-  },
+    // Set up all events reaction for the ap
+    vent.on('add:button',     this.addStart, this);
+    vent.on('add:submit',     this.showButton, this);
+    vent.on('add:cancel',     this.showButton, this);
+    vent.on('add:submit',     this.addSubmit, this);
+    vent.on('remove:button',  this.removeButton, this);
+    vent.on('update:submit',  this.updateSubmit, this);
+    vent.on('done:changed',   this.doneCheckboxToggled, this);
 
-  /// events
-  submitted: function(e) {
-    e.preventDefault();
-    var newDescription = $(this.$el[0]).find("input[type=text]").val();
-    if (newDescription != "")
-      vent.trigger('add:submit', newDescription);
-
-    this.undelegateEvents();
-    this.remove();
-  },
-  cancelled: function(e) {
-    vent.trigger('add:cancel');
-    this.undelegateEvents();
-    this.remove();
-  },
-});
-
-// Task item view
-App.Views.TaskItem = Backbone.View.extend({
-  tagName: 'li',
-  className: 'task',
-  viewTemplate: t("taskListTemplate"),
-  editTemplate: t("taskEditTemplate"),
-  events: {
-    'dblclick .taskView .label': 'renderEdit',
-    'submit .taskEdit': 'update',
-    'blur .taskEdit input[type=text]': 'render',
-    'click .remove': 'removeClicked',
-    'click .taskDone': 'toggleDone',
-  },
-
-  // init
-  initialize: function () {
-    this.listenTo(this.model, 'change', this.render);
-    this.listenTo(this.model, 'destroy', this.removeItem); // Wondering about this
-    // this.listenTo(this.model, 'visible', this.toggleVisible);
+    // Populate collection and render app view
+    this.render();
   },
 
   // methods
   render: function() {
-    this.$el.html( this.viewTemplate( this.model.toJSON() ) );
+    // no template, modifies the #content div that exists on page
+    this.$("#taskList").html( this.views.collection.render().el );
     return this;
   },
-  renderEdit: function() {
-    this.$el.html( this.editTemplate( this.model.toJSON() ) );
-    this.$el.find("input[type=text]").focus();
-    return this;
-  },
-  removeItem: function() {
-    this.remove();
+  showButton: function() {
+    this.views.$addButton.show();
   },
 
   // events
-  update: function(e) {
-    e.preventDefault();
-    var newDescription = $(this.$el[0]).find("input[type=text]").val();
-    if (newDescription != "")
-      vent.trigger('update:submit', this.model, {description: newDescription});
-  },
-  removeClicked: function(e) {
-    e.preventDefault();
-    vent.trigger('remove:button', this.model);
-  },
-  toggleDone: function(e) {
-    var newValue = this.$('.taskDone').is(":checked"); //.attr('checked') === 'checked';
-    vent.trigger('done:changed', this.model, newValue);
-  }
-});
-
-
-// Task list view
-App.Views.TaskList = Backbone.View.extend({
-  tagName: 'ol',
-  style: 'color: blue',
-  events: {
-    'click .add button': 'add',
-  },
-
-  // init
-  initialize: function () {
-    vent.on('add:button', this.addStart, this);
-    this.listenTo(this.collection, 'add', this.renderItem);
-  },
-
-  // methods
-  renderItem: function(task) {
-    var tv = new App.Views.TaskItem({model: task});
-    this.$el.append(tv.render().el);
-  },
-
-  // events
-  addStart: function(e) {
-    var tv = new App.Views.TaskAdd({model: new App.Models.Task});
-    this.$el.append(tv.render().el);
-    window.$ii = this.$el.find("input[type=text]")
+  addStart: function() {
+    this.views.$addButton.hide();
+    var tv = new TM.View.TaskAdd({model: new TM.Model.Task});
+    var $listView = this.views.collection.$el;
+    $listView.append(tv.render().el);
+    window.$ii = $listView.find("input[type=text]");
     $ii.focus();
   },
-
-});
-
-
-/////////////////////////////////////////////////////////
-// App - runtime
-/////////////////////////////////////////////////////////
-var $task_content = $("#task-content");
-
-var tasks = new App.Collections.Tasks();
-tasks.fetch();
-
-var tasksView = new App.Views.TaskList({collection: tasks});
-$task_content.html(tasksView.render().el);
-
-var $addButton = $("#add");
-$addButton.on('click', function() {
-  $addButton.hide();
-  vent.trigger('add:button');
-});
-function showButton() { $addButton.show(); }
-vent.on('add:submit', showButton);
-vent.on('add:cancel', showButton);
-
-
-vent.on('add:submit', function(newTitle) {
-  var m = new App.Models.Task({description: newTitle});
-  tasks.push(m);
-  m.save();
-});
-
-vent.on('remove:button', function(task) {
-  task.destroy();
-});
-
-vent.on('update:submit', function(task, updates) {
-  task.save(updates, {patch: true});
-});
-
-vent.on('done:changed', function(task, newValue) {
-  if (task.get('status') == 0 && newValue == true) {
-    task.save({status: 1}, {patch: true})
-  } else if (task.get('status') == '1' && newValue == false) {
-    task.save({status: 0}, {patch: true})
-  } else {
-    console.log([newValue, task.toJSON()]);
+  addSubmit: function(newTitle) {
+    var m = new TM.Model.Task({description: newTitle});
+    this.collection.push(m);
+    m.save();
+  },
+  updateSubmit: function(task, updates) {
+    task.save(updates, {patch: true});
+  },
+  removeButton: function(task) {
+    task.destroy();
+  },
+  doneCheckboxToggled: function(task, newValue) {
+    if (task.get('status') == 0 && newValue == true) {
+      task.save({status: 1}, {patch: true})
+    } else if (task.get('status') == '1' && newValue == false) {
+      task.save({status: 0}, {patch: true})
+    } else {
+      console.error([newValue, task.toJSON()]);
+    }
   }
+
 });
 
 

@@ -37,10 +37,14 @@ form.taskView {
  border-bottom: 1px solid #FFF;
 }
 
-button#add {
+#taskAdd button {
     margin: 0.5em 20% 1em 1.2em;
     width: 80%;
 
+}
+.taskMenu {
+  margin: 0 0 0.5em 1em;
+  font-size: 50%;
 }
 
 span.done {
