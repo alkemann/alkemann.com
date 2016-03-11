@@ -31,7 +31,7 @@ TM.View.App = Backbone.View.extend({
     vent.on('purge:clicked', this.purgeCompletedTodos, this);
 
     // Listen to all events and display them
-    // vent.on('all', function(eventName) { console.info('EVENT: ' + eventName); });
+    // vent.on('all', function(eventName) { console.info('EVENT: ' + eventName); console.log(arguments); });
 
     // Populate collection and render app view
     this.render();
