@@ -1,11 +1,9 @@
-'use strict';
 (function() {
+'use strict';
 
 ///// globals
-window.TM = window.TM || { Model: {}, View: {}, Collection: {}, Router: {} }
-window.t = window.t || function(id) { return _.template($("#"+id).html()); }
-
-// Events container for general pub/sub
+window.TM   = window.TM || { Model: {}, View: {}, Collection: {}, Router: {} }
+window.t    = window.t || function(id) { return _.template($("#"+id).html()); }
 window.vent = _.extend({}, Backbone.Events);
 
 /////////////////////////////////////////////////////////
@@ -22,12 +20,11 @@ TM.Router = Backbone.Router.extend({
     this.navigate("");
   }
 
-
 });
 
 
 /////////////////////////////////////////////////////////
-// App View
+// App View : Central controller for the entire APP
 /////////////////////////////////////////////////////////
 
 TM.View.App = Backbone.View.extend({
@@ -97,6 +94,11 @@ TM.View.App = Backbone.View.extend({
 
 });
 
+
+/////////////////////////////////////////////////////////
+// General local functions
+/////////////////////////////////////////////////////////
+
 function updateSubmit(task, updates) {
   task.save(updates, {patch: true});
 };
@@ -116,5 +118,5 @@ function doneCheckboxToggled(task, newValue) {
 };
 
 
-///////
+/////
 })();

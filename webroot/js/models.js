@@ -1,4 +1,7 @@
+(function() {
 'use strict';
+
+window.TM = window.TM || { Model: {}, View: {}, Collection: {}, Router: {} }
 
 /////////////////////////////////////////////////////////
 // Backend : Models & Collections
@@ -27,3 +30,6 @@ TM.Collection.Tasks = Backbone.Collection.extend({
     return ai < bi ? 1 : -1;
   }
 });
+
+/////
+})();

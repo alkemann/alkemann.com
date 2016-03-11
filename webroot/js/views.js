@@ -1,9 +1,16 @@
+(function() {
 'use strict';
+
+window.TM = window.TM || { Model: {}, View: {}, Collection: {}, Router: {} }
+
+/////////////////////////////////////////////////////////
+// Views
+/////////////////////////////////////////////////////////
+
 
 // List all items view
 TM.View.TaskList = Backbone.View.extend({
   tagName: 'ol',
-
 
   // init
   initialize: function () {
@@ -24,6 +31,7 @@ TM.View.TaskList = Backbone.View.extend({
   },
 
 });
+
 
 // Display existing Task item in list
 TM.View.TaskItem = Backbone.View.extend({
@@ -76,6 +84,7 @@ TM.View.TaskItem = Backbone.View.extend({
   }
 });
 
+
 // Add task view
 TM.View.TaskAdd = Backbone.View.extend({
   template: t("taskAddTemplate"),
@@ -87,8 +96,8 @@ TM.View.TaskAdd = Backbone.View.extend({
   render: function() {
     this.$el.html( this.template() );
     return this;
-  }
-,
+  },
+
   /// events
   submitted: function(e) {
     e.preventDefault();
@@ -101,3 +110,7 @@ TM.View.TaskAdd = Backbone.View.extend({
   },
 
 });
+
+
+/////
+})();
