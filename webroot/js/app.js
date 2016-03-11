@@ -59,8 +59,6 @@ TM.View.App = Backbone.View.extend({
     // Populate collection and render app view
     this.render();
 
-    // this.renderAddView();
-
     new TM.Router;
     Backbone.history.start();
   },
