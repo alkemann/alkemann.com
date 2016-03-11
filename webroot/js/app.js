@@ -48,10 +48,11 @@ TM.View.App = Backbone.View.extend({
     // Set up all events reaction for the ap
     vent.on('add:render',     this.renderAddView, this);
     vent.on('add:submit',     this.addSubmit, this);
-    vent.on('remove:button',  this.removeButton, this);
-    vent.on('update:submit',  this.updateSubmit, this);
-    vent.on('done:changed',   this.doneCheckboxToggled, this);
     vent.on('purge:clicked',    this.purgeCompletedTodos, this);
+
+    vent.on('remove:button',  removeButton);
+    vent.on('update:submit',  updateSubmit);
+    vent.on('done:changed',   doneCheckboxToggled);
 
     // Listen to all events and display them
     // vent.on('all', function(eventName) { console.info('EVENT: ' + eventName); });
@@ -83,21 +84,6 @@ TM.View.App = Backbone.View.extend({
     this.collection.push(m);
     m.save();
   },
-  updateSubmit: function(task, updates) {
-    task.save(updates, {patch: true});
-  },
-  removeButton: function(task) {
-    task.destroy();
-  },
-  doneCheckboxToggled: function(task, newValue) {
-    if (task.get('status') == 0 && newValue == true) {
-      task.save({status: 1}, {patch: true})
-    } else if (task.get('status') == '1' && newValue == false) {
-      task.save({status: 0}, {patch: true})
-    } else {
-      console.error([newValue, task.toJSON()]);
-    }
-  },
   purgeCompletedTodos: function() {
     var completedTasks = [];
     this.collection.each(function(task) {
@@ -110,6 +96,24 @@ TM.View.App = Backbone.View.extend({
   },
 
 });
+
+function updateSubmit(task, updates) {
+  task.save(updates, {patch: true});
+};
+
+function removeButton(task) {
+  task.destroy();
+};
+
+function doneCheckboxToggled(task, newValue) {
+  if (task.get('status') == 0 && newValue == true) {
+    task.save({status: 1}, {patch: true})
+  } else if (task.get('status') == '1' && newValue == false) {
+    task.save({status: 0}, {patch: true})
+  } else {
+    console.error([newValue, task.toJSON()]);
+  }
+};
 
 
 ///////
