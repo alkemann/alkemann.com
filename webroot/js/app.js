@@ -34,22 +34,18 @@ TM.View.App = Backbone.View.extend({
   initialize: function() {
     // Grab the collection
     this.collection = new TM.Collection.Tasks;
-    this.collection.fetch({success: function() {
-      vent.trigger("add:render");
-    }});
+    this.collection.fetch({
+      success: function() { vent.trigger("add:render"); }
+    });
 
     // Set up the view parts
     this.views = {};
     this.views.collection = new TM.View.TaskList({collection: this.collection});
 
     // Set up all events reaction for the ap
-    vent.on('add:render',     this.renderAddView, this);
-    vent.on('add:submit',     this.addSubmit, this);
-    vent.on('purge:clicked',    this.purgeCompletedTodos, this);
-
-    vent.on('remove:button',  removeButton);
-    vent.on('update:submit',  updateSubmit);
-    vent.on('done:changed',   doneCheckboxToggled);
+    vent.on('add:render',    this.renderAddView, this);
+    vent.on('add:submit',    this.addSubmit, this);
+    vent.on('purge:clicked', this.purgeCompletedTodos, this);
 
     // Listen to all events and display them
     // vent.on('all', function(eventName) { console.info('EVENT: ' + eventName); });
@@ -93,29 +89,6 @@ TM.View.App = Backbone.View.extend({
   },
 
 });
-
-
-/////////////////////////////////////////////////////////
-// General local functions
-/////////////////////////////////////////////////////////
-
-function updateSubmit(task, updates) {
-  task.save(updates, {patch: true});
-};
-
-function removeButton(task) {
-  task.destroy();
-};
-
-function doneCheckboxToggled(task, newValue) {
-  if (task.get('status') == 0 && newValue == true) {
-    task.save({status: 1}, {patch: true})
-  } else if (task.get('status') == '1' && newValue == false) {
-    task.save({status: 0}, {patch: true})
-  } else {
-    console.error([newValue, task.toJSON()]);
-  }
-};
 
 
 /////
