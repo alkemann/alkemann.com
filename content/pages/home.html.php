@@ -1,10 +1,10 @@
+<link rel="stylesheet" href="css/dragula.css">
 <!-- Start HTML -->
 <div id="content">
     <h1>Tasks</h1>
     <ul class="taskMenu"><li><a href="#purge">Archive completed tasks</a></li></ul>
     <div id="taskList"></div>
 </div>
-
 
 <!-- Templates -->
 <script id="taskListTemplate" type="text/template">
@@ -27,6 +27,7 @@
 <script src="js/libs/underscore.js"></script>
 <script src="js/libs/zepto.js"></script>
 <script src="js/libs/backbone.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.6.8/dragula.min.js'></script>
 <script src="js/app.js"></script>
 <script src="js/router.js"></script>
 <script src="js/models.js"></script>
