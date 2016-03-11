@@ -18,6 +18,8 @@ TM.Model.Task = Backbone.Model.extend({
   url: function() {
     return this.urlRoot + ( this.isNew() ? "" :  "?id=" + this.get('id') );
   },
+  initialize: function() {
+  }
 });
 
 TM.Collection.Tasks = Backbone.Collection.extend({
@@ -36,33 +38,33 @@ TM.Collection.Tasks = Backbone.Collection.extend({
 // General local functions
 /////////////////////////////////////////////////////////
 
+
+vent.on("task:update",   updateTask);
 vent.on('remove:button', destroyRemovedTasks);
-vent.on('update:submit', updateTask);
-vent.on('done:changed',  doneCheckboxToggled);
+vent.on('done:changed',  toggleStatusOfTask);
 
 
 /////////////////////////////////////////////////////////
-// General local functions
+// General functions
 /////////////////////////////////////////////////////////
 
 function updateTask(task, updates) {
   task.save(updates, {patch: true});
 };
 
-function doneCheckboxToggled(task, newValue) {
-  if (task.get('status') == 0 && newValue == true) {
+function toggleStatusOfTask(task, newStatusValue) {
+  if (task.get('status') == 0 && newStatusValue == true) {
     task.save({status: 1}, {patch: true})
-  } else if (task.get('status') == '1' && newValue == false) {
+  } else if (task.get('status') == '1' && newStatusValue == false) {
     task.save({status: 0}, {patch: true})
   } else {
-    console.error([newValue, task.toJSON()]);
+    console.error([newStatusValue, task.toJSON()]);
   }
 };
 
 function destroyRemovedTasks(task) {
   task.destroy();
 }
-
 
 
 /////

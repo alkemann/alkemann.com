@@ -14,6 +14,9 @@ TM.View.TaskList = Backbone.View.extend({
 
   // init
   initialize: function () {
+    // initializiation
+
+    // events
     this.listenTo(this.collection, 'add', this.renderItem);
     this.listenTo(this.collection, 'sort', this.renderFull);
     vent.on('taskList:render', this.renderFull, this);
@@ -56,6 +59,8 @@ TM.View.TaskItem = Backbone.View.extend({
   // methods
   render: function() {
     this.$el.html( this.viewTemplate( this.model.toJSON() ) );
+    this.$el.attr("data-id", this.model.id);
+    this.$el.attr("data-priority", this.model.get('priority'));
     return this;
   },
   renderEdit: function() {
@@ -72,14 +77,14 @@ TM.View.TaskItem = Backbone.View.extend({
     e.preventDefault();
     var newDescription = $(this.$el[0]).find("input[type=text]").val();
     if (newDescription != "")
-      vent.trigger('update:submit', this.model, {description: newDescription});
+      vent.trigger('task:update', this.model, {description: newDescription});
   },
   removeClicked: function(e) {
     e.preventDefault();
     vent.trigger('remove:button', this.model);
   },
   toggleDone: function(e) {
-    var newValue = this.$('.taskDone').is(":checked"); //.attr('checked') === 'checked';
+    var newValue = this.$('.taskDone').is(":checked");
     vent.trigger('done:changed', this.model, newValue);
   }
 });
