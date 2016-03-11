@@ -92,10 +92,18 @@ TM.View.TaskAdd = Backbone.View.extend({
     'submit .taskAdd': 'submitted',
   },
 
+  // init
+  initialize: function() {
+    vent.on('add:focus', this.setFocus, this);
+  },
+
   // methods
   render: function() {
     this.$el.html( this.template() );
     return this;
+  },
+  setFocus: function() {
+    this.$("input[type=text]").focus();
   },
 
   /// events

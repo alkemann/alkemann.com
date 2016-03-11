@@ -7,23 +7,6 @@ window.t    = window.t || function(id) { return _.template($("#"+id).html()); }
 window.vent = _.extend({}, Backbone.Events);
 
 /////////////////////////////////////////////////////////
-// Routes
-/////////////////////////////////////////////////////////
-
-TM.Router = Backbone.Router.extend({
-  routes: {
-    "purge": "purge"
-  },
-
-  purge: function() {
-    vent.trigger('purge:clicked');
-    this.navigate("");
-  }
-
-});
-
-
-/////////////////////////////////////////////////////////
 // App View : Central controller for the entire APP
 /////////////////////////////////////////////////////////
 
@@ -53,8 +36,6 @@ TM.View.App = Backbone.View.extend({
     // Populate collection and render app view
     this.render();
 
-    new TM.Router;
-    Backbone.history.start();
   },
 
   // methods

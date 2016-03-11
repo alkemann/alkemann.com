@@ -28,6 +28,7 @@
 <script src="js/libs/zepto.js"></script>
 <script src="js/libs/backbone.js"></script>
 <script src="js/app.js"></script>
+<script src="js/router.js"></script>
 <script src="js/models.js"></script>
 <script src="js/views.js"></script>
 <script type="text/javascript"> (function() { 
