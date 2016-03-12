@@ -16,16 +16,14 @@ define('HL_PATH', LIBS_PATH . 'alkemann/h.l/src' . DS );
 
 require_once(CONFIG_PATH . 'defines.php');
 require_once(LIBS_PATH . 'autoload.php');
-require_once(CONFIG_PATH . 'bootstrap.php');
+require_once(HL_PATH . 'bootstrap.php');
 require_once(CONFIG_PATH . 'routes.php');
 
 dbp(['_config', '_classes']);
 
+$request = new alkemann\hl\core\Request();
 try {
-    $Dispatch = new alkemann\hl\core\Dispatch();
-    $Dispatch->run();
+    (new alkemann\hl\core\Render($request))->render();
 } catch (Exception $e) {
-    $errorHandler = new alkemann\hl\core\ErrorHandler($e);
-    $errorHandler->dispatch($Dispatch);
-    $errorHandler->deal();
+   alkemann\hl\core\handleError($e, $request);
 }
