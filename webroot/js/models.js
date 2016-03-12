@@ -18,8 +18,6 @@ TM.Model.Task = Backbone.Model.extend({
   url: function() {
     return this.urlRoot + ( this.isNew() ? "" :  "?id=" + this.get('id') );
   },
-  initialize: function() {
-  }
 });
 
 TM.Collection.Tasks = Backbone.Collection.extend({
@@ -42,6 +40,7 @@ TM.Collection.Tasks = Backbone.Collection.extend({
 vent.on("task:update",   updateTask);
 vent.on('remove:button', destroyRemovedTasks);
 vent.on('done:changed',  toggleStatusOfTask);
+vent.on('list:sorted',   saveListSortOrder);
 
 
 /////////////////////////////////////////////////////////
@@ -66,6 +65,13 @@ function destroyRemovedTasks(task) {
   task.destroy();
 }
 
+function saveListSortOrder(saveString) {
+  // TODO save in delayed timeout
+  $.post('/api/tasks/sort.json?' + saveString)
+    .error(function(data) {
+      console.error('Error: ' + data);
+    });
+}
 
 /////
 })();

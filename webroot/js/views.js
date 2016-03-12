@@ -11,6 +11,11 @@ window.TM = window.TM || { Model: {}, View: {}, Collection: {}, Router: {} }
 // List all items view
 TM.View.TaskList = Backbone.View.extend({
   tagName: 'ol',
+  sortOptions: {
+    items: "> li",
+    axis: "y",
+    opacity: 0.3,
+  },
 
   // init
   initialize: function () {
@@ -20,6 +25,9 @@ TM.View.TaskList = Backbone.View.extend({
     this.listenTo(this.collection, 'add', this.renderItem);
     this.listenTo(this.collection, 'sort', this.renderFull);
     vent.on('taskList:render', this.renderFull, this);
+    this.$el.sortable(this.sortOptions);
+    this.$el.on("sortupdate", sortStopped);
+    this.$el.disableSelection(); // why this?
   },
 
   // methods
@@ -35,6 +43,10 @@ TM.View.TaskList = Backbone.View.extend({
 
 });
 
+function sortStopped(e, ui) {
+  var s = $(this).sortable('serialize', {attribute: "data-id", key: "task[]", expression: /(.+)/ });
+  vent.trigger("list:sorted", s);
+}
 
 // Display existing Task item in list
 TM.View.TaskItem = Backbone.View.extend({
@@ -60,7 +72,6 @@ TM.View.TaskItem = Backbone.View.extend({
   render: function() {
     this.$el.html( this.viewTemplate( this.model.toJSON() ) );
     this.$el.attr("data-id", this.model.id);
-    this.$el.attr("data-priority", this.model.get('priority'));
     return this;
   },
   renderEdit: function() {
