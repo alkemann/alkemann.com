@@ -59,7 +59,7 @@ function toggleStatusOfTask(task, newStatusValue) {
   } else {
     console.error([newStatusValue, task.toJSON()]);
   }
-};
+}
 
 function destroyRemovedTasks(task) {
   task.destroy();

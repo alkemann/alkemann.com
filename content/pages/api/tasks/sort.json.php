@@ -1,11 +1,7 @@
 <?php
 ini_set('html_errors', false);
 
-use alkemann\hl\data\Connection;
-use alkemann\hl\data\Db;
-
-$db = new Db(new Connection(['database' => 'todos', 'username' => 'root', 'password' => '']));
-$db = $db->db('todos');
+$db = alkemann\hl\data\database(CONFIG_PATH . 'connection.php');
 
 $result = true;
 $ids = $this->request()->param('task');

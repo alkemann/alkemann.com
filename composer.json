@@ -14,7 +14,7 @@
         }
     ],
     "require": {
-        "alkemann/h.l": "2.4"
+        "alkemann/h.l": ">=3.0"
     },
     "repositories": [
         {
