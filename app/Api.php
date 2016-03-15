@@ -3,7 +3,7 @@
 namespace app;
 
 use alkemann\hl\core\Request;
-use alkemann\hl\core\Render;
+use alkemann\hl\core\Page;
 
 class Api {
 
@@ -11,7 +11,7 @@ class Api {
     protected $request;
     protected $render;
 
-    public function __construct(Render $render, Request $request, $model) {
+    public function __construct(Page $render, Request $request, $model) {
         $this->render   = $render;
         $this->request  = $request;
         $this->model    = $model;

@@ -23,7 +23,7 @@ if (DEBUG) dbp(['_config', '_classes']);
 
 $request = new alkemann\hl\core\Request();
 try {
-    (new alkemann\hl\core\Render($request))->render();
+    $request->response()->render();
 } catch (Exception $e) {
    alkemann\hl\core\handleError($e, $request);
 }
