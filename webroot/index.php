@@ -19,7 +19,7 @@ require_once(LIBS_PATH . 'autoload.php');
 require_once(HL_PATH . 'bootstrap.php');
 require_once(CONFIG_PATH . 'routes.php');
 
-dbp(['_config', '_classes']);
+if (DEBUG) dbp(['_config', '_classes']);
 
 $request = new alkemann\hl\core\Request();
 try {
