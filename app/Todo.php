@@ -12,19 +12,13 @@ class Todo extends \alkemann\hl\data\Model
     public static function instance()
     {
         return
-            new Todo(
-                new Db(
-                    new Connection(['database' => 'todos', 'username' => 'root', 'password' => 'root'])
-                ), 
-                [
-                    'db' => 'todos',
-                    'table' => 'todos',
-                    'fields' => ['id', 'priority', 'description', 'status', 'updated', 'created']
-                ]
-            );
+            new Todo([
+                'table' => 'todos',
+                'connection' => CONFIG_PATH . 'connection.php'
+            ]);
     }
 
-    public function string($entity)
+    public function string(Entity $entity)
     {
         return $entity->description;
     }
