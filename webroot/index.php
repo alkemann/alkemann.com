@@ -1,29 +1,38 @@
 <?php
-define('FIRST_APP_CONSTANT', 'FIRST_APP_CONSTANT');
-//** auto defines - dont change these
-define('DS', DIRECTORY_SEPARATOR);
-define('ROOT', realpath(dirname(dirname(__FILE__))));
-define('WEBROOT_DIR', basename(dirname(__FILE__)));
-define('WWW_ROOT', dirname(__FILE__) . DS);
-define('CONTENT_PATH', ROOT . DS . 'content' . DS);
-define('LAYOUT_PATH', CONTENT_PATH . 'layout' . DS);
-define('LIBS_PATH', ROOT . DS . 'vendor' . DS);
-define('RESOURCE_DIR', 'resources');
-define('LOGS_PATH', ROOT . DS . RESOURCE_DIR . DS . 'logs' . DS);
-define('LOCALES_PATH', ROOT . DS . RESOURCE_DIR . DS . 'locales' . DS);
-define('CONFIG_PATH', ROOT . DS . RESOURCE_DIR . DS . 'configs' . DS);
-define('HL_PATH', LIBS_PATH . 'alkemann/h.l/src' . DS );
+define('FIRST_APP_CONSTANT', 'FIRST_APP_CONSTANT'); // For debug purposes
+// ************
+$DS = DIRECTORY_SEPARATOR;
+$ROOT = realpath(dirname(dirname(__FILE__)));
+$VENDOR_PATH = $ROOT . $DS . 'vendor' . $DS;
+$CONFIG_PATH = $ROOT . $DS . 'resources' . $DS . 'configs' . $DS;
+require_once($VENDOR_PATH . 'autoload.php');
 
-require_once(CONFIG_PATH . 'defines.php');
-require_once(LIBS_PATH . 'autoload.php');
-require_once(HL_PATH . 'bootstrap.php');
-require_once(CONFIG_PATH . 'routes.php');
+// Default error handling
+require_once($CONFIG_PATH . 'error_handlers.php');
+set_exception_handler('app\handleError');
+set_error_handler('app\handleWarning', E_WARNING);
 
-if (DEBUG) dbp(['_config', '_classes']);
+// Include configuration files
+require_once($CONFIG_PATH . 'environment.php');
+require_once($CONFIG_PATH . 'connection.php');
+require_once($CONFIG_PATH . 'routes.php');
 
-$request = new alkemann\hl\core\Request();
-try {
-    $request->response()->render();
-} catch (Exception $e) {
-   alkemann\hl\core\handleError($e, $request);
+// ***********
+
+use alkemann\h2l\{
+    Dispatch, Environment, Log
+};
+
+$dispatch = new Dispatch($_REQUEST, $_SERVER, $_GET, $_POST);
+$dispatch->setRouteFromRouter();
+
+foreach (Environment::middlewares() as $middle) {
+	$dispatch->registerMiddle($middle);
+}
+
+$response = $dispatch->response();
+if ($response) {
+    echo $response->render();
+    // Log response code and content type after render echo
+    Log::debug("== RESPONSE: {$response->code()} {$response->contentType()} ==");
 }

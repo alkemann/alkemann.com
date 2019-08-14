@@ -1,5 +1,5 @@
 {
-    "name": "alkemann.com",
+    "name": "alkemann/homepage",
     "description": "My homepage",
     "version": "v1.0",
     "type": "project",
@@ -14,14 +14,8 @@
         }
     ],
     "require": {
-        "alkemann/h.l": ">=3.1"
+        "alkemann/h2l": ">=0.47"
     },
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/alkemann/h.l.git"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "app\\": "app/"

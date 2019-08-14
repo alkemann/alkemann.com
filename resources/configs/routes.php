@@ -1,81 +1,77 @@
 <?php
 
-use alkemann\hl\core\Router;
-use alkemann\hl\core\Response;
-use alkemann\hl\core\Request;
-use alkemann\hl\core\Error;
+use alkemann\h2l\{Router, Log, Response, Request, response\Error, util\Http };
+use app\Json;
 
 Router::alias('/', 'home');
 
 // Post new resoure
-Router::add('|^api/(?<resource>\w+)$|', function($request) {
+Router::add('|^/api/(?<resource>\w+)$|', function($request) {
+    ini_set('html_errors', 0);
     switch ($request->param('resource')) {
-        case 'task':
+        case 'tasks':
         case 'todo':
-            $model = app\Todo::instance();
+            $model = app\Todo::class;
             break;
         default:
-            return new Error(404);
+            return new Json(null, 404);
     }
-    $json = $request->getPostBody();
-    if (!$json) return new Error(400, "Missing a post body");
-    $data = json_decode($json, true);
-    if ($data === false || $data === null) return new Error(400, "Invalid json body");
-    $entity = $model->create($data);
-    if (!$entity->save($data)) return new Error(400, "Invalid data");
-    return new Response($entity); // automatically json encoded
-}, Request::POST);
+    $data = $request->content();
+    if (!$data) return new Json("Missing a post body", 400);
+    $entity = new $model($data);
+    if (!$entity->save($data)) return new Json(400, "Invalid data");
+    return new Json($entity); // automatically json encoded
+}, Http::POST);
 
 
 // Get or Update resoure
-Router::add('|^api/(?<resource>\w+)/(?<id>\d+)$|', function($request) {
+Router::add('|^/api/(?<resource>\w+)/(?<id>\d+)$|', function($request) {
+    ini_set('html_errors', 0);
     switch ($request->param('resource')) {
-        case 'task':
+        case 'tasks':
         case 'todo':
-            $model = app\Todo::instance();
+            $model = app\Todo::class;
             break;
         default:
-            return new Error(404);
+            return new Json(null, 404);
     }
 
-    $entity = $model->get($request->param('id'));
-    if (!$entity) return new Error(404);
+    $entity = $model::get($request->param('id'));
+    if (!$entity) return new Json(null, 404);
 
     switch ($request->method()) {
 
-        case Request::GET:
+        case Http::GET:
             break; // nothing to do
 
-        case Request::PATCH:
-        case Request::PUT:
-            $json = $request->getPostBody();
-            if (!$json)
-                return new Error(400, "Missing a post body");
-            $data = json_decode($json, true);
+        case Http::PATCH:
+        case Http::PUT:
+            $data = $request->content();
             if ($data === false || $data === null)
-                return new Error(400, "Invalid json body");
+                return new Json("Invalid json body", 400);
             if (!$entity->save($data))
-                return new Error(400, "Invalid data");
+                return new Json("Invalid data", 400);
             break;
 
-        case Request::DELETE:
-            if (!$entity->delete()) return new Error(500, "Unable to delete");
+        case Http::DELETE:
+            if (!$entity->delete()) return new Json("Unable to delete", 500);
             break;
     }
 
-    return new Response($entity); // automatically json encoded
-}, [Request::GET, Request::PATCH, Request::PUT, Request::DELETE]);
+    return new Json($entity); // automatically json encoded
+}, [Http::GET, Http::PATCH, Http::PUT, Http::DELETE]);
 
 
 // List GET endpoint(s)
-Router::add('|^api/(?<resource>\w+)$|', function($request) {
+Router::add('|^/api/(?<resource>\w+)$|', function($request) {
+    ini_set('html_errors', 0);
     switch ($request->param('resource')) {
         case 'tasks':
-        case 'todos':
-            $model = app\Todo::instance();
+        case 'todo':
+            $model = app\Todo::class;
             break;
         default:
-            return new Error(404);
+            return new Json(null, 404);
     }
     // TODO get conditions nicer out of URL GET params
     $conditions = $_GET;
@@ -93,6 +89,6 @@ Router::add('|^api/(?<resource>\w+)$|', function($request) {
         $options['fields'] = $conditions['fields'];
         unset($conditions['fields']);
     }
-    $entities = $model->find($conditions, $options);
-    return new Response($entities);
-}, Request::GET);
+    $entities = $model::findAsArray($conditions, $options);
+    return new Json(array_values($entities));
+}, Http::GET);

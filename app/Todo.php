@@ -2,29 +2,22 @@
 
 namespace app;
 
-use alkemann\hl\data\Connection;
-use alkemann\hl\data\Db;
-use alkemann\hl\data\Entity;
+use alkemann\h2l\data\Db;
+use alkemann\h2l\traits\{Entity, Model};
 
-class Todo extends \alkemann\hl\data\Model
+class Todo implements \JsonSerializable
 {
+    use Entity, Model;
 
-    public static function instance()
+    public static $table = 'todos';
+
+    public function delete()
     {
-        return
-            new Todo([
-                'table' => 'todos',
-                'connection' => CONFIG_PATH . 'connection.php'
-            ]);
+        return $this->save(['status' => $this->status - 10]);
     }
 
-    public function string(Entity $entity)
+    public function JsonSerialize()
     {
-        return $entity->description;
-    }
-
-    public function delete(Entity $entity, array $options = [])
-    {
-        return $this->save($entity, ['status' => $entity->status - 10]);
+        return $this->data;
     }
 }

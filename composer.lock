@@ -1,46 +1,70 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "hash": "600796348f2a53fbaab0505b8ed26ca4",
+    "content-hash": "feb0482d3cca30b3c6d30e9a9d6a5af6",
     "packages": [
         {
-            "name": "alkemann/h.l",
-            "version": "v1.0",
+            "name": "alkemann/h2l",
+            "version": "v0.47.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/alkemann/h.l.git",
-                "reference": "fc80fe70afae4595a207bf1bf7fa2f5b53f2c07a"
+                "url": "https://github.com/alkemann/h2l.git",
+                "reference": "81f87abcbd683dee7c4fa7d94c35a9bf2e586794"
             },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/alkemann/h2l/zipball/81f87abcbd683dee7c4fa7d94c35a9bf2e586794",
+                "reference": "81f87abcbd683dee7c4fa7d94c35a9bf2e586794",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1.0"
+            },
+            "require-dev": {
+                "mongodb/mongodb": "^1.1",
+                "phpunit/phpunit": "^7.5.14"
+            },
+            "suggest": {
+                "alkemann/debug": "Convenient var_dump replaces for debug and development, require-dev only",
+                "ext-mongo": "For the MongoDb Datasource. ",
+                "ext-pdo": "For the MySql, Postgres and Sqlite Datasources.",
+                "mongodb/mongodb": "A Mongo DB data connection is provided that uses this library",
+                "monolog/monolog": "Advanced logging that can be plugged into the logger"
+            },
+            "bin": [
+                "bin/skeleton",
+                "bin/testh2l"
+            ],
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "alkemann\\hl\\": "src/"
+                    "alkemann\\h2l\\": "src/",
+                    "alkemann\\h2l\\tests\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "authors": [
                 {
                     "name": "Alexander Morland",
-                    "homepage": "https://github.com/alkemann",
-                    "role": "Developer"
+                    "homepage": "https://github.com/alkemann"
                 }
             ],
-            "description": "Library containing the h.l classes used by the H.L.App base",
-            "homepage": "https://github.com/alkemann/h.l",
+            "description": "A micro framework for websites and apis. This is a sequel of h.l, made for PHP 7",
+            "homepage": "https://github.com/alkemann/h2l",
             "keywords": [
-                "alkemann",
-                "cms",
-                "homepage"
+                "PHP7",
+                "framework",
+                "microframework",
+                "router",
+                "routing"
             ],
-            "support": {
-                "issues": "https://github.com/alkemann/h.l/issues"
-            },
-            "time": "2015-06-03 18:03:20"
+            "time": "2019-08-13T13:57:24+00:00"
         }
     ],
     "packages-dev": [],

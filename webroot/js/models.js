@@ -16,7 +16,7 @@ TM.Model.Task = Backbone.Model.extend({
   },
   urlRoot: 'api/tasks',
   url: function() {
-    return this.urlRoot + ( this.isNew() ? "" :  "?id=" + this.get('id') );
+    return this.urlRoot + ( this.isNew() ? "" :  "/" + this.get('id') );
   },
 });
 
