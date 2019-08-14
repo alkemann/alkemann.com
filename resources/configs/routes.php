@@ -16,8 +16,16 @@ Router::add('|^/api/(?<resource>\w+)$|', function($request) {
         default:
             return new Json(null, 404);
     }
-    $data = $request->content();
-    if (!$data) return new Json("Missing a post body", 400);
+    $json = $request->body();
+    if (!$json) return new Json("Missing a post body", 400);
+    if (is_string($json)) {
+        $data = json_decode($json, true);
+    } else {
+        $data = $json;
+    }
+    if (!is_array($data)) {
+         return new Json("Bad request body", 400);
+    }
     $entity = new $model($data);
     if (!$entity->save($data)) return new Json(400, "Invalid data");
     return new Json($entity); // automatically json encoded
@@ -46,7 +54,16 @@ Router::add('|^/api/(?<resource>\w+)/(?<id>\d+)$|', function($request) {
 
         case Http::PATCH:
         case Http::PUT:
-            $data = $request->content();
+            $json = $request->body();
+            if (!$json) return new Json("Missing a post body", 400);
+            if (is_string($json)) {
+                $data = json_decode($json, true);
+            } else {
+                $data = $json;
+            }
+            if (!is_array($data)) {
+                 return new Json("Bad request body", 400);
+            }
             if ($data === false || $data === null)
                 return new Json("Invalid json body", 400);
             if (!$entity->save($data))
