@@ -25,8 +25,18 @@ function handleError(\Throwable $e): void
     } elseif ($e instanceof PhpError) {
         Log::alert(get_class($e) . ": " . $e->getMessage());
     }
-
-    if (Environment::get('debug')) {
+    if (strpos($_SERVER['HTTP_ACCEPT'], 'json') !== false) {
+        if (Environment::get('debug')) {
+            echo (new Json([
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                // 'trace' => $e->getTrace(),
+            ], 500))->render();
+        } else {
+            echo (new Json(['message' => 'Server error'], 500))->render();
+        }
+    } elseif (Environment::get('debug')) {
         header("HTTP/1.0 500 Internal Server Error");
         header("Content-type: text/html");
         if (isset($e->xdebug_message)) {
@@ -52,10 +62,20 @@ function handleError(\Throwable $e): void
 function handleWarning($errno, $message, $file, $line, $meta): void
 {
     if (Environment::get('debug')) {
-        header("Content-type: text/html");
-        echo '<h1 style="color:red;">' . $message . '</h1>';
-        echo '<h3>' . $file . ' :: ' . $line . '</h3>';
-        var_dump($meta);
+        if (strpos($_SERVER['HTTP_ACCEPT'], 'json') !== false) {
+            echo (new Json([
+                'message' => $message,
+                'file' => $file,
+                'line' => $line,
+                'error' => $errno,
+                'meta' => $meta,
+            ], 500))->render();
+        } else {
+            header("Content-type: text/html");
+            echo '<h1 style="color:red;">' . $message . '</h1>';
+            echo '<h3>' . $file . ' :: ' . $line . '</h3>';
+            var_dump($meta);
+        }
         die();
     } else {
         error_log("WARNING: {$file}::{$line} : $errno : $message : " . preg_replace("|\s+|", " ",

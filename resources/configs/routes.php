@@ -2,6 +2,7 @@
 
 use alkemann\h2l\{Router, Log, Response, Request, response\Error, util\Http };
 use app\Json;
+use app\Todo;
 
 Router::alias('/', 'home');
 
@@ -11,7 +12,7 @@ Router::add('|^/api/(?<resource>\w+)$|', function($request) {
     switch ($request->param('resource')) {
         case 'tasks':
         case 'todo':
-            $model = app\Todo::class;
+            $model = Todo::class;
             break;
         default:
             return new Json(null, 404);
@@ -38,7 +39,7 @@ Router::add('|^/api/(?<resource>\w+)/(?<id>\d+)$|', function($request) {
     switch ($request->param('resource')) {
         case 'tasks':
         case 'todo':
-            $model = app\Todo::class;
+            $model = Todo::class;
             break;
         default:
             return new Json(null, 404);
@@ -85,13 +86,12 @@ Router::add('|^/api/(?<resource>\w+)$|', function($request) {
     switch ($request->param('resource')) {
         case 'tasks':
         case 'todo':
-            $model = app\Todo::class;
+            $model = Todo::class;
             break;
         default:
             return new Json(null, 404);
     }
-    // TODO get conditions nicer out of URL GET params
-    $conditions = $_GET;
+    $conditions = $request->getGetData();
     unset($conditions['url']);
     $options = [];
     if (isset($conditions['limit'])) {
@@ -106,6 +106,29 @@ Router::add('|^/api/(?<resource>\w+)$|', function($request) {
         $options['fields'] = $conditions['fields'];
         unset($conditions['fields']);
     }
+    $whitelist = ['status', 'priority', 'updated', 'created', 'id'];
+    $conditions = array_intersect_key($conditions, array_flip($whitelist));  
     $entities = $model::findAsArray($conditions, $options);
     return new Json(array_values($entities));
 }, Http::GET);
+
+Router::add('|^/api/tasks/sort(?:\.json)?$|', function(Request $request): Json {
+    $post = $request->content();
+    $ids = $post['task'] ?? false;
+    if (empty($ids) || !is_array($ids)) {
+        return new Json(['error' => "Did not send an array of IDs"], 400);
+    }
+    $count = count($ids);
+    $result = true;
+
+
+    $db = Todo::db();
+    foreach ($ids as $i => $id) {
+        $result = $result && $db->update('todos', ['id' => $id], ['priority' => $count-$i, 'updated' => date("Y-m-d H:i:s")]);
+    }
+
+    if (!$result) {
+        return new Json(['error' => "Did not save as many as sent!"], 400);
+    }
+    return new Json($result);
+}, Http::POST);

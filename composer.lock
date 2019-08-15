@@ -4,8 +4,44 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "feb0482d3cca30b3c6d30e9a9d6a5af6",
+    "content-hash": "7bc7ae20962c2778df7f6425b46d2e14",
     "packages": [
+        {
+            "name": "alkemann/debug",
+            "version": "v0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/alkemann/debug.git",
+                "reference": "98cb0638ba39e396d3807acfc85060063e0dd788"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/alkemann/debug/zipball/98cb0638ba39e396d3807acfc85060063e0dd788",
+                "reference": "98cb0638ba39e396d3807acfc85060063e0dd788",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "alkemann\\debug\\": "src/"
+                },
+                "files": [
+                    "src/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alexander Morland",
+                    "email": "alek.morland@gmail.com"
+                }
+            ],
+            "description": "Debug tool for dumping data, prettily",
+            "time": "2017-08-11T13:51:28+00:00"
+        },
         {
             "name": "alkemann/h2l",
             "version": "v0.47.3",

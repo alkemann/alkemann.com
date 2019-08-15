@@ -1,3 +1,4 @@
+<?php $this->layout = false; ?>
 <html>
 <body>
 <h1>Server Error</h1>
