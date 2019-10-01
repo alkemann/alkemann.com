@@ -20,7 +20,7 @@ require_once($CONFIG_PATH . 'routes.php');
 // ***********
 
 use alkemann\h2l\{
-    Dispatch, Environment, Log
+    Dispatch, Environment, Log, Response
 };
 
 $dispatch = new Dispatch($_REQUEST, $_SERVER, $_GET, $_POST);
@@ -31,8 +31,10 @@ foreach (Environment::middlewares() as $middle) {
 }
 
 $response = $dispatch->response();
-if ($response) {
-    echo $response->render();
+
+if ($response instanceof Response) {
     // Log response code and content type after render echo
     Log::debug("== RESPONSE: {$response->code()} {$response->contentType()} ==");
 }
+
+echo $response;

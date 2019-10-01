@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7bc7ae20962c2778df7f6425b46d2e14",
+    "content-hash": "f02bd161683d128d7a0d62ba9b77ed19",
     "packages": [
         {
             "name": "alkemann/debug",
@@ -44,20 +44,20 @@
         },
         {
             "name": "alkemann/h2l",
-            "version": "v0.47.3",
+            "version": "v0.50.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/alkemann/h2l.git",
-                "reference": "81f87abcbd683dee7c4fa7d94c35a9bf2e586794"
+                "reference": "9adf843f9de2463812a3be061832442a0e256bac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alkemann/h2l/zipball/81f87abcbd683dee7c4fa7d94c35a9bf2e586794",
-                "reference": "81f87abcbd683dee7c4fa7d94c35a9bf2e586794",
+                "url": "https://api.github.com/repos/alkemann/h2l/zipball/9adf843f9de2463812a3be061832442a0e256bac",
+                "reference": "9adf843f9de2463812a3be061832442a0e256bac",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1.0"
+                "php": "^7.3.0"
             },
             "require-dev": {
                 "mongodb/mongodb": "^1.1",
@@ -100,7 +100,7 @@
                 "router",
                 "routing"
             ],
-            "time": "2019-08-13T13:57:24+00:00"
+            "time": "2019-10-01T12:26:31+00:00"
         }
     ],
     "packages-dev": [],
